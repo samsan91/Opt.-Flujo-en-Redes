@@ -1,5 +1,9 @@
 from random import random, choice
 from sys import stdout
+import time
+
+time_ejecucion = 0
+print(time_ejecucion)
 
 colores = ["red", "orange", "black", "blue", "brown","pink", "gray", "green", "purple", "red"]
 
@@ -25,6 +29,8 @@ class Grafo:
         self.y = dict()
         self.E = []
         self.destino = None
+        self.vecinos = dict()
+        self.i = None
  
     def generar(self, orden): #generando los nodos necesarios
         self.n = orden # Se da una asignación a la variable n
@@ -80,15 +86,15 @@ class Grafo:
 
 
 
-    def floyd_warshall(self): 
+    def FloydWarshall(self):
         d = {}
-        for nodo in self.n:
+        for nodo in range(self.n - 1):
             d[(nodo, nodo)] = 0 # distancia reflexiva es cero
-            for nodo in self.E[nodo2]: # para vecinos, la distancia es el peso
-                d[(nodo, nodo2)] = self.E[(nodo, nodo2)]
-        for intermedio in self.destino:
-            for desde in self.destino:
-                for hasta in self.destino:
+            for (vecino, peso) in self.vecinos[nodo]: # para vecinos, la distancia es el peso
+                d[(nodo, vecino)] = peso
+        for intermedio in self.vecinos:
+            for desde in self.vecinos:
+                for hasta in self.vecinos:
                     di = None
                     if (desde, intermedio) in d:
                         di = d[(desde, intermedio)]
@@ -99,38 +105,37 @@ class Grafo:
                         c = di + ih # largo del camino via "i"
                         if (desde, hasta) not in d or c < d[(desde, hasta)]:
                             d[(desde, hasta)] = c # mejora al camino actual
-        print(d)
         return d
-"""    
 
-    def camino(self, s, t, c, f): # construcción de un camino aumentante
+
+    def camino(self, s, t, f): # construcciÃ³n de un camino aumentante
         cola = [s]
         usados = set()
         camino = dict()
         while len(cola) > 0:
             u = cola.pop(0)
             usados.add(u)
-            for (w, v) in c:
+            for (i,w, v, p, c) in self.E:
                 if w == u and v not in cola and v not in usados:
                     actual = f.get((u, v), 0)
-                    dif = c[(u, v)] - actual
+                    dif = p - actual
                     if dif > 0:
                         cola.append(v)
                         camino[v] = (u, dif)
         if t in usados:
             return camino
-        else: # no se alcanzó
+        else:
             return None
  
  
  
-    def ford_fulkerson(self, c, s, t): # algoritmo de Ford y Fulkerson
+    def FordFulkerson(self, s, t): # algoritmo de Ford y Fulkerson
         if s == t:
             return 0
         maximo = 0
         f = dict()
         while True:
-            aum = camino(s, t, c, f)
+            aum = self.camino(s, t, f)
             if aum is None:
                 break # ya no hay
             incr = min(aum.values(), key = (lambda k: k[1]))[1]
@@ -144,12 +149,28 @@ class Grafo:
                 u = v
             maximo += incr
         return maximo
-"""
+        print(maximo)
 
+    def TiempoEjecucion():
+        t0 = time.clock()
+        for i in xrange(10000000):
+            pass
+        time_ejecucion = time.clock() - t0 
+        print("%.2f sec" % (time.clock() - t0))
+        return time_ejecucion
 
+    def test(self,s,t):
+        for i in range(10000):
+            self.FordFulkerson(self,s,t)
+            
+        start_time = time()
+        test()
+        elapsed_time = time() - start_time
+        print("Elapsed time: %.10f seconds." % elapsed_time)
 
-                
-#Documenación, lo que se tuvo que hacer para poder adaptar el codigo de ladoctora al mio.
+print(time_ejecucion)
+           
+#Documenación, lo que se tuvo que hacer para poder adaptar el codigo de la doctora al mio.
 #Revisar para grafos simples y ponderados y si funciona con grafos dirigidos, verificar, si tienen sentido las salidas, entonces llegar a una conclusión,
 #poner algun mensaje de advertencia si el usuario trata de meter un grafo dirigido, advertiendole que no funciona.
 #Aumentamos el tamaño de la instancia, el tiempo de ejecución aumenta
